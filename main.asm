@@ -14,7 +14,13 @@ main:
   jz .enc
   cmp ah, 0x3c
   jz .dec
+  cmp ah, 0x3d
+  jz .reboot
   jmp main
+
+.reboot:
+  db 0xea
+  dw 0x0, 0xffff
 
 .enc:
   mov si, msgenc
@@ -164,7 +170,7 @@ dlen    dw 0
 plen    dw 0
 passwd  times 32 db 0
 buffer  times 512 db 0
-msgact  db 13,10,'Actions:    F1 - encrypt    F2 - decrypt',13,10,10,0
+msgact  db 13,10,'Actions:   F1 - encrypt   F2 - decrypt   F3 - reboot',13,10,10,0
 msgenc  db 'Enter the message you want to encrypt:',13,10,10,0
 msgpss  db 13,10,'Enter secret password: ',0
 msgsct  db 13,10,'        Select sector: ',0
