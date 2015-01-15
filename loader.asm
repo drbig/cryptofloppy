@@ -29,7 +29,7 @@ flp_read:
   mov bx, 0         ;
   
   mov ah, 2         ; Load disk data to ES:BX
-  mov al, 2         ; Load 1 sectors
+  mov al, 2         ; Load 2 sectors
   mov ch, 0         ; Cylinder=0
   mov cl, 2         ; Sector=2
   mov dh, 0         ; Head=0
@@ -71,7 +71,6 @@ intro   db 13,10,'cryptoFloppy v0.0.1 (2015-01-13) by dRbiG',13,10
         db 13,10,'Loading main program...',0
 msgferr db ' floppy error, not good...',0
 msgfok  db ' done.',13,10,0
-
 
 ; pad and sign the boot sector
         times 510-($-$$) db 0
