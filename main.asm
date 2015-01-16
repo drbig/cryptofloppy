@@ -72,6 +72,8 @@ main:
   mov si, msgwrk
   call print_string
 
+  call encrypt
+
   call flp_reset
   mov dh, 3         ; write
   call flp_op       ;
@@ -112,11 +114,12 @@ read_pass:
   mov ah, 0         ; read key
   int 0x16          ;
 
+  cmp al, 0xd       ; Enter
+  jz .done          ;
+
   mov byte [passwd+edx], al ; save character
   inc edx                   ; increment counter
 
-  cmp al, 0xd       ; Enter
-  jz .done          ;
   cmp edx, 0x20     ; counter = 32
   jz .done          ;
 
@@ -129,6 +132,7 @@ read_pass:
 
 .done:
   mov byte [passwd+edx], 0  ; append null byte
+  dec edx                   ; we actually want last index
   mov word [plen], dx       ; save pass length
 
   ret
@@ -238,6 +242,32 @@ flp_op:
   mov si, msgfok
   call print_string
 
+  ret
+
+encrypt:
+  mov ecx, 0x0
+  mov edx, 0x0
+  mov si, buffer
+
+.loop:
+  lodsb
+  cmp al, 0x0
+  jz .done
+
+  mov bl, byte [passwd+edx]
+  xor al, bl
+  mov byte [buffer+ecx], al
+  inc ecx
+
+  inc edx
+  mov ax, word [plen]
+  cmp dx, ax
+  jnz .skip_rset
+  mov edx, 0x0
+.skip_rset:
+  jmp .loop
+
+.done:
   ret
 
 ; data
