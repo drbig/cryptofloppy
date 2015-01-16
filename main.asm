@@ -307,7 +307,10 @@ dlen    dw 0
 plen    dw 0
 passwd  times 32 db 0
 buffer  times 512 db 0
-msgact  db 13,10,'Actions:   F1 - encrypt   F2 - decrypt   F3 - reboot',13,10,0
+
+msgact  db 13,10,'cryptoFloppy v0.0.2 (2015-01-16) by dRbiG',13,10
+        db 'Code at: https://github.com/drbig/cryptofloppy',13,10,10
+        db 'Actions:   F1 - encrypt   F2 - decrypt   F3 - reboot',13,10,0
 msgenc  db 13,10,'Enter the message you want to encrypt:',13,10,10,0
 msgpss  db 13,10,'Enter secret password: ',0
 msgsct  db 13,10,'        Select sector: ',0

@@ -66,7 +66,7 @@ print_string:
   ret
 
 ; data
-intro   db 13,10,'cryptoFloppy v0.0.1 (2015-01-13) by dRbiG',13,10
+intro   db 13,10,'cryptoFloppy v0.0.2 (2015-01-16) by dRbiG',13,10
         db 'Code at: https://github.com/drbig/cryptofloppy',13,10
         db 13,10,'Loading main program...',0
 msgferr db ' floppy error, not good...',0
