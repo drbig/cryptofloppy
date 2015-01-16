@@ -84,6 +84,7 @@ main:
   jmp main
 
 .dec:
+  call read_pass
   call read_sect
 
   mov si, msgwrk
@@ -92,6 +93,8 @@ main:
   call flp_reset
   mov dh, 2         ; read
   call flp_op       ;
+
+  call decrypt
 
   mov si, msgstr
   call print_string
@@ -251,14 +254,41 @@ encrypt:
 
 .loop:
   lodsb
-  cmp al, 0x0
-  jz .done
 
   mov bl, byte [passwd+edx]
   xor al, bl
   mov byte [buffer+ecx], al
-  inc ecx
+  xor al, bl
+  cmp al, 0x0
+  jz .done
 
+  inc ecx
+  inc edx
+  mov ax, word [plen]
+  cmp dx, ax
+  jnz .skip_rset
+  mov edx, 0x0
+.skip_rset:
+  jmp .loop
+
+.done:
+  ret
+
+decrypt:
+  mov ecx, 0x0
+  mov edx, 0x0
+  mov si, buffer
+
+.loop:
+  lodsb
+
+  mov bl, byte [passwd+edx]
+  xor al, bl
+  mov byte [buffer+ecx], al
+  cmp al, 0x0
+  jz .done
+
+  inc ecx
   inc edx
   mov ax, word [plen]
   cmp dx, ax
