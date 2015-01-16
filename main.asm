@@ -322,7 +322,3 @@ msgend  db 13,10,'END OF MESSAGE',0
 ; will know we need to update the number here and the
 ; number of sectors loaded in loader.asm
         times 1536-($-$$) db 0
-
-; floppy sector 5 ((512 + 1536) / 512)
-        db 'test message plain text',0
-        times (1536+512)-($-$$) db 0
