@@ -37,6 +37,10 @@ main:
 
   cmp al, 0xd       ; Enter
   jz .enc_read_done ;
+  cmp al, 0x8       ; Backspace
+  jnz .skip_bksp    ;
+  sub edx, 0x2      ; just decrease the counter
+.skip_bksp:
   cmp edx, 0x200    ; counter = 512
   jz .enc_read_done ;
 
@@ -58,9 +62,10 @@ main:
   jmp .enc_read
 
 .enc_read_done:
-  mov word [dlen], dx ; save data length
-  call scr_clear
+  mov byte [buffer+edx], 0  ; append null byte
+  mov word [dlen], dx       ; save data length
 
+  call scr_clear
   call read_pass
   call read_sect
 
@@ -236,7 +241,7 @@ flp_op:
   ret
 
 ; data
-sect    db 5
+sect    db 0
 dlen    dw 0
 plen    dw 0
 passwd  times 32 db 0
