@@ -153,7 +153,8 @@ read_sect:
   cmp ah, 0x2       ;
   jl .loop          ;
 
-  dec ah              ; now we have the proper number
+  dec ah              ; fix key read
+  add ah, 0x4         ; offset (code uses 4 sectors)
   mov byte [sect], ah ; save the sector number
 
   mov ah, 0xe       ; echo the number
