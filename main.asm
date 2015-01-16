@@ -61,11 +61,49 @@ main:
   mov word [dlen], dx ; save data length
   call scr_clear
 
+  call read_pass
+  call read_sect
+
+  mov si, msgwrk
+  call print_string
+
+  call flp_reset
+  mov dh, 3         ; write
+  call flp_op       ;
+
+  mov ah, 0         ; wait for key
+  int 0x16          ;
+
+  jmp main
+
+.dec:
+  call read_sect
+
+  mov si, msgwrk
+  call print_string
+
+  call flp_reset
+  mov dh, 2         ; read
+  call flp_op       ;
+
+  mov si, msgstr
+  call print_string
+  mov si, buffer
+  call print_string
+  mov si, msgend
+  call print_string
+
+  mov ah, 0         ; wait for key
+  int 0x16          ;
+
+  jmp main
+
+read_pass:
   mov si, msgpss
   call print_string
 
   mov edx, 0        ; character counter
-.enc_read_pass:
+.loop:
   mov ah, 0         ; read key
   int 0x16          ;
 
@@ -73,32 +111,35 @@ main:
   inc edx                   ; increment counter
 
   cmp al, 0xd       ; Enter
-  jz .enc_pass_done ;
+  jz .done          ;
   cmp edx, 0x20     ; counter = 32
-  jz .enc_pass_done ;
+  jz .done          ;
 
   mov ah, 0xe       ; echo the traditional '*'
   mov al, '*'       ;
   mov bx, 7         ;
   int 0x10          ;
 
-  jmp .enc_read_pass
+  jmp .loop
 
-.enc_pass_done:
+.done:
   mov byte [passwd+edx], 0  ; append null byte
   mov word [plen], dx       ; save pass length
 
+  ret
+
+read_sect:
   mov si, msgsct
   call print_string
 
-.enc_read_sect:
+.loop:
   mov ah, 0         ; read key
   int 0x16          ;
 
   cmp ah, 0xa       ; filter the key so that
-  jg .enc_read_sect ; only 1 - 9 is valid
+  jg .loop          ; only 1 - 9 is valid
   cmp ah, 0x2       ;
-  jl .enc_read_sect ;
+  jl .loop          ;
 
   dec ah              ; now we have the proper number
   mov byte [sect], ah ; save the sector number
@@ -107,15 +148,7 @@ main:
   mov bx, 7         ;
   int 0x10          ;
 
-  mov si, msgwrk
-  call print_string
-
-  mov ah, 0         ; wait for key
-  int 0x16          ;
-
-.dec:
-
-  jmp main
+  ret
 
 scr_clear:
   mov ah, 0         ; set video mode
@@ -165,20 +198,65 @@ print_placeholder:
 
   ret
 
+flp_reset:          ; Reset the floppy drive
+  mov ax, 0         ;
+  mov dl, 0         ; Drive=0 (=A)
+  int 0x13          ;
+  jnc .done         ; ERROR => reset again
+
+  mov si, msgferr
+  call print_string
+  jmp flp_reset
+
+.done:
+  ret
+
+flp_op:
+  mov ax, 0x1000      ; ES:BX = 1000:bx
+  mov es, ax          ;
+  mov bx, buffer
+
+  mov ah, dh          ; ah indicates 2 = load, 3 = write
+  mov al, 1           ; Load 1 sector
+  mov ch, 0           ; Cylinder=0
+  mov cl, byte [sect] ; Sector
+  mov dh, 0           ; Head=0
+  mov dl, 0           ; Drive=0
+  int 0x13            ; Read!
+  jnc .done           ; ERROR => Try again
+
+  mov si, msgferr
+  call print_string
+  jmp flp_op
+
+.done:
+  mov si, msgfok
+  call print_string
+
+  ret
+
 ; data
-sect    db 0
+sect    db 5
 dlen    dw 0
 plen    dw 0
 passwd  times 32 db 0
 buffer  times 512 db 0
-msgact  db 13,10,'Actions:   F1 - encrypt   F2 - decrypt   F3 - reboot',13,10,10,0
-msgenc  db 'Enter the message you want to encrypt:',13,10,10,0
+msgact  db 13,10,'Actions:   F1 - encrypt   F2 - decrypt   F3 - reboot',13,10,0
+msgenc  db 13,10,'Enter the message you want to encrypt:',13,10,10,0
 msgpss  db 13,10,'Enter secret password: ',0
 msgsct  db 13,10,'        Select sector: ',0
-msgwrk  db 13,10,10,'Working... ',0
+msgwrk  db 13,10,10,'Working...',0
 msgnl   db 13,10,0
+msgferr db ' floppy error...',0
+msgfok  db ' done.',13,10,10,0
+msgstr  db 'START OF MESSAGE',13,10,0
+msgend  db 13,10,'END OF MESSAGE',0
 
 ; pad the full-sector lengths, so that when we go over
 ; will know we need to update the number here and the
 ; number of sectors loaded in loader.asm
-        times 1024-($-$$) db 0
+        times 1536-($-$$) db 0
+
+; floppy sector 5 ((512 + 1536) / 512)
+        db 'test message plain text',0
+        times (1536+512)-($-$$) db 0

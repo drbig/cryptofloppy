@@ -29,7 +29,7 @@ flp_read:
   mov bx, 0         ;
   
   mov ah, 2         ; Load disk data to ES:BX
-  mov al, 2         ; Load 2 sectors
+  mov al, 3         ; Load 3 sectors
   mov ch, 0         ; Cylinder=0
   mov cl, 2         ; Sector=2
   mov dh, 0         ; Head=0
