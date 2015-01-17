@@ -317,7 +317,10 @@ decrypt:
   cmp al, 0x0
   jz .done
 
-  inc ecx
+  inc ecx           ; buffer offset
+  cmp cx, 0x1ff     ; if more than 511
+  jg .done          ; we're out
+
   inc edx
   mov ax, word [plen]
   cmp dx, ax
