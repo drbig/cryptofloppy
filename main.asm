@@ -62,6 +62,13 @@ main:
   jmp .enc_read
 
 .enc_read_done:
+  cmp dx, 1         ; null data to encrypt
+  jnz .enc_read_ok  ; if not we're ok
+  mov si, msgabt    ; just abort
+  call input_error  ;
+  jmp main          ;
+
+.enc_read_ok:
   mov byte [buffer+edx], 0  ; append null byte
   mov word [dlen], dx       ; save data length
 
@@ -118,13 +125,13 @@ read_pass:
   int 0x16          ;
 
   cmp al, 0xd       ; Enter
-  jz .done          ;
+  jz .read_done     ;
 
   mov byte [passwd+edx], al ; save character
   inc edx                   ; increment counter
 
   cmp edx, 0x20     ; counter = 32
-  jz .done          ;
+  jz .read_done     ;
 
   mov ah, 0xe       ; echo the traditional '*'
   mov al, '*'       ;
@@ -133,9 +140,18 @@ read_pass:
 
   jmp .loop
 
-.done:
+.read_done:
   mov byte [passwd+edx], 0  ; append null byte
+
+  cmp edx, 0        ; null password
+  jnz .done         ; if not, we're done
+  mov si, msgrtr    ; we can retry this
+  call input_error  ;
+  jmp read_pass     ;
+
   dec edx                   ; we actually want last index
+
+.done:
   mov word [plen], dx       ; save pass length
 
   ret
@@ -181,6 +197,18 @@ print_string:
   jmp print_string
 
 .done:
+  ret
+
+input_error:
+  push esi          ; save argument
+  mov si, msgierr
+  call print_string
+  pop esi           ; print the argument
+  call print_string ;
+
+  mov ah, 0         ; wait for key
+  int 0x16          ;
+
   ret
 
 print_placeholder:
@@ -320,6 +348,9 @@ msgferr db ' floppy error...',0
 msgfok  db ' done.',13,10,10,0
 msgstr  db 'START OF MESSAGE',13,10,0
 msgend  db 13,10,'END OF MESSAGE',0
+msgierr db 13,10,'NULL INPUT -',0
+msgabt  db ' ABORT',0
+msgrtr  db ' RETRY',0
 
 ; pad the full-sector lengths, so that when we go over
 ; will know we need to update the number here and the
