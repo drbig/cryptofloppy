@@ -26,7 +26,7 @@ TL;DR:
  - It actually works - tested on a real computer (I'm that brave)
  - The 'encryption' for now is a simple XOR
  - I'd happily include a proper cipher, there is still *plenty* of space left
- - Anyone up for the challenge of writing a modern cipher for x86 protected mode? :)
+ - Anyone up for the challenge of writing a modern cipher for x86 ~~protected~~ real mode? :) (yeah, I'm new here)
  - UI can always use more love
  - People actually knowing what they doing are welcome to improve the code in terms of performance, readability and general best practices
  - I've tried to comment the code
@@ -46,6 +46,16 @@ Writing the image to a real floppy is just (adjust the floppy drive device as ne
     $ dd if=floppy.img of=/dev/fd0
 
 This may also work on a USB thumb drive, but I haven't tested it.
+
+#### Learning corner
+
+Links to readings I found useful and/or interesting:
+
+ - [Bootloader introduction](www.nondot.org/sabre/os/files/Booting/nasmBoot.txt)
+ - [Full bootloader code](www.websofia.com/2013/10/writing-your-own-toy-operating-system-first-and-second-stage-bootloaders-together/)
+ - [BIOS interrupts](stanislavs.org/helppc/idx_interrupt.html)
+ - [Agner Fog's manuals](http://www.agner.org/optimize/)
+ - [Ciphers for protected mode](http://asmaes.sourceforge.net/)
 
 #### Licensing
 
