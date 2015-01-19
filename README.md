@@ -1,4 +1,4 @@
-# cryptoFloppy
+# cryptoFloppy [![Build Status](https://travis-ci.org/drbig/cryptofloppy.svg?branch=master)](https://travis-ci.org/drbig/cryptofloppy)
 
 ![The Secret Floppy](https://raw.github.com/drbig/cryptofloppy/master/cryptofloppy.jpg)
 
@@ -41,11 +41,30 @@ Example build and test session:
 
 This will clean the bin files, assemble the sources, create a zero-filled file (space for saving the messages), bundle up the floppy image and run it via `qemu-system-i386`.
 
-Writing the image to a real floppy is just (adjust the floppy drive device as needed):
+You should obviously always test your image in an emulator *before even thinking about* trying it on a real hardware, as at this level the code may wipe out your harddrives, produce seizure-inducing video and fax your mother a nasty letter. Though most probably bad code will just hang/reboot the machine.
+
+For those brave enough and with an actual vintage working floppy drive writing the image to a real floppy diskette is just (adjust the device path if needed):
 
     $ dd if=floppy.img of=/dev/fd0
 
-This may also work on a USB thumb drive, but I haven't tested it.
+#### Contributing
+
+Fork the repo, hack away and remember to share back by making a Pull Request. All skill levels welcome. Feature ideas short-list:
+
+ - Better UI (and there is a lot under this one)
+   - Proper new-line handling when writing the message
+   - Cursor keys for editing
+   - Character left counter
+   - Password confirmation
+   - Write confirmation
+   - ...
+ - Work from any drive (not only A:)
+ - Read and write more than just 9 sectors
+ - Pad messages with random bytes to fill the whole sector
+
+Feel free to add issues with ideas/concerns etc.
+
+If you're a seasoned x86 assembly hacker you may go over the code and apply best practices and optimisations (with comments, so we can learn). Or if you're looking for a challenge - port some [real crypto](http://en.wikipedia.org/wiki/Block_cipher#Blowfish).
 
 #### Learning corner
 
