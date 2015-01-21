@@ -58,7 +58,7 @@ Fork the repo, hack away and remember to share back by making a Pull Request. Al
    - Password confirmation
    - Write confirmation
    - ...
- - Work from any drive (not only A:)
+ - ~~Work from any drive (not only A:)~~
  - Read and write more than just 9 sectors
  - Pad messages with random bytes to fill the whole sector
 
