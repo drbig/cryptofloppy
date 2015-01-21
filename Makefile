@@ -7,7 +7,7 @@ zero.img:
 	dd if=/dev/zero of=zero.img bs=512 count=9
 
 clean:
-	rm *.bin floppy.img
+	rm -f *.bin floppy.img
 
 emu:
 	qemu-system-i386 -fda floppy.img -boot a
