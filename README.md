@@ -70,9 +70,9 @@ If you're a seasoned x86 assembly hacker you may go over the code and apply best
 
 Links to readings I found useful and/or interesting:
 
- - [Bootloader introduction](www.nondot.org/sabre/os/files/Booting/nasmBoot.txt)
- - [Full bootloader code](www.websofia.com/2013/10/writing-your-own-toy-operating-system-first-and-second-stage-bootloaders-together/)
- - [BIOS interrupts](stanislavs.org/helppc/idx_interrupt.html)
+ - [Bootloader introduction](http://www.nondot.org/sabre/os/files/Booting/nasmBoot.txt)
+ - [Full bootloader code](http://www.websofia.com/2013/10/writing-your-own-toy-operating-system-first-and-second-stage-bootloaders-together/)
+ - [BIOS interrupts](http://stanislavs.org/helppc/idx_interrupt.html)
  - [Agner Fog's manuals](http://www.agner.org/optimize/)
  - [Ciphers for protected mode](http://asmaes.sourceforge.net/)
 
