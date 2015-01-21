@@ -2,8 +2,16 @@
 
 bits 16
 org 0x0
- 
-main: 
+
+  mov [bootdrv], dl ; save boot drive number
+
+  cli               ; disable interrupts
+  mov ax, 0x1000    ; setup segments
+  mov es, ax        ;
+  mov ds, ax        ;
+  sti               ; enable interrupts
+
+main:
   call scr_clear
   mov si, msgact
   call print_string
@@ -239,9 +247,9 @@ print_placeholder:
 
   ret
 
-flp_reset:          ; Reset the floppy drive
+flp_reset:          ; reset the floppy drive
   mov ax, 0         ;
-  mov dl, 0         ; Drive=0 (=A)
+  mov dl, [bootdrv] ; drive
   int 0x13          ;
   jnc .done         ; ERROR => reset again
 
@@ -253,18 +261,18 @@ flp_reset:          ; Reset the floppy drive
   ret
 
 flp_op:
-  mov ax, 0x1000      ; ES:BX = 1000:bx
-  mov es, ax          ;
+  mov ax, 0x1000    ; ES:BX = 1000:bx
+  mov es, ax        ;
   mov bx, buffer
 
-  mov ah, dh          ; ah indicates 2 = load, 3 = write
-  mov al, 1           ; Load 1 sector
-  mov ch, 0           ; Cylinder=0
-  mov cl, byte [sect] ; Sector
-  mov dh, 0           ; Head=0
-  mov dl, 0           ; Drive=0
-  int 0x13            ; Read!
-  jnc .done           ; ERROR => Try again
+  mov ah, dh        ; ah indicates 2 = load, 3 = write
+  mov al, 1         ; load sectors = 1
+  mov ch, 0         ; cylinder = 0
+  mov cl, [sect]    ; sector
+  mov dh, 0         ; head = 0
+  mov dl, [bootdrv] ; drive
+  int 0x13          ; do
+  jnc .done         ; ERROR => Try again
 
   mov si, msgferr
   call print_string
@@ -338,6 +346,7 @@ dlen    dw 0
 plen    dw 0
 passwd  times 32 db 0
 buffer  times 512 db 0
+bootdrv db 0
 
 msgact  db 13,10,'cryptoFloppy v0.0.2 (2015-01-16) by dRbiG',13,10
         db 'Code at: https://github.com/drbig/cryptofloppy',13,10,10
